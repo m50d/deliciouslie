@@ -1,5 +1,7 @@
 package net.homelinux.md401.deliciouslie
 
-trait Component {
+import shapeless.HList
+
+trait Component[Deps <: HList] {
 
 }
