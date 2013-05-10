@@ -7,6 +7,8 @@ case class ContextDependent[Deps <: HList, A](f: Deps => A)
 object Implicits {
   implicit def noContext2Function[A](cd: ContextDependent[HNil, A]): () => A
    = () => cd.f(HNil)
+  implicit def contextContext2BiggerContext[Deps1, Deps2, A](cd: ContextDependent[Deps1, ContextDependent[Deps2, A]]): ContextDependent[Deps1 ::: Deps2, A] =
+    ContextDependent({deps: Deps1 ::: Deps2 => cd.f(deps.Deps1).f(deps.Deps2)})
 }
 
 trait Component[Deps <: HList] {
