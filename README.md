@@ -10,14 +10,13 @@ Why?
   * Not safe - if we get it wrong, NPE at runtime
   * No way to separate "wiring up" a context from "running" it
 
-Goals
------
+Features
+--------
  * Lightweight
   * Implemented in pure scala, without macros
   * Only dependency is Shapeless
-  * Attempts to minimize syntactic overhead
-   * Does require somewhat longer component implementations than "classic" cake pattern
-   * However, doesn't require distinct interface/implementation declarations for each component
+  * Does require somewhat longer component implementations than "classic" cake pattern
+  * However, doesn't require distinct interface/implementation declarations for each component
  * Safe
   * Dependencies are checked at compile time
   * Service initialization happens in the correct order in the cake
@@ -32,6 +31,8 @@ import shapeless._
 import net.homelinux.md401.deliciouslie.DeliciousLie._
 
 //component with no dependencies or lifecycle (shortcut syntax)
+//a component is essentially a "service factory" rather than the service itself
+//hence why we're declaring our components as objects
 object LogComponent extends BottomLayer[Log] {
   def layer() = new Log()
 }
