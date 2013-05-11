@@ -21,7 +21,10 @@ class DeliciousLieTest {
       hn: HNil =>
         new Layer[Service1](){
           def withLayer[A](f: Service1 => A) = {
-            f(Service1())
+            lifecycle.start()
+            val r = f(Service1())
+            lifecycle.stop()
+            r
           }
         }
     }
