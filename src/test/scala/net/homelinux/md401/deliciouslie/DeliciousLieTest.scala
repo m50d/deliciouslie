@@ -28,7 +28,6 @@ class DeliciousLieTest {
         }
     }
   }
-  val bakedComponent1 = bakedNil wit rawComponent1
   val rawComponent2 = new Layer[Service1 :: HNil, Service2] {
     val withLayer = {
       l : (Service1 :: HNil) =>
@@ -39,7 +38,6 @@ class DeliciousLieTest {
         }
     }
   }
-  val bakedComponent2 = bakedComponent1 wit rawComponent2
   
   val rawComponent3 = new Layer[Service2 :: Service1 :: HNil, Service3] {
     val withLayer = {
@@ -51,7 +49,7 @@ class DeliciousLieTest {
         }
     }
   }
-  val bakedComponent3 = bakedComponent2 wit rawComponent3
+  val cake = bakedNil wit rawComponent1 wit rawComponent2 wit rawComponent3
   
   @Test
   def instantiatesComponentExactlyOnce() {
@@ -60,7 +58,7 @@ class DeliciousLieTest {
     lifecycle.stop()
     expectLastCall()
     replay(lifecycle)
-    bakedComponent3.burn({l => {}})
+    cake.burn({l => {}})
     verify(lifecycle)
   }
 }
