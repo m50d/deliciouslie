@@ -51,7 +51,7 @@ object UserFetcherComponent extends Layer[Log :: DatabaseConnection :: HNil, Use
   val withService = for {
       //type-safe, will only compile because Log is present in the above declaration
       log <- context[Log]
-      //compiler can usually infer types
+      //compiler can usually infer types from how services are used inside the yield block
       databaseConnection <- context
     } yield { new UserFetcher(databaseConnection, log) }
 
