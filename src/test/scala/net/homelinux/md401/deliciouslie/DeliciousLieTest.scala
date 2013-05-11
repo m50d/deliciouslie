@@ -16,10 +16,10 @@ class DeliciousLieTest {
   val lifecycle = createMock(classOf[Service1Lifecycle])
   
   val bakedNil = BakedNil()
-  val rawComponent1 = new BakedLayer[HNil, Service1] {
+  val rawComponent1 = new Layer[HNil, Service1] {
     val withLayer = {
       hn: HNil =>
-        new Layer[Service1](){
+        new BakedLayer[Service1](){
           def withComponent(f: Service1 => Unit) = {
             lifecycle.start()
             f(Service1())
@@ -29,10 +29,10 @@ class DeliciousLieTest {
     }
   }
   val bakedComponent1 = BakedCons[Service1, BakedNil](rawComponent1, bakedNil)
-  val rawComponent2 = new BakedLayer[Service1 :: HNil, Service2] {
+  val rawComponent2 = new Layer[Service1 :: HNil, Service2] {
     val withLayer = {
       l : (Service1 :: HNil) =>
-        new Layer[Service2](){
+        new BakedLayer[Service2](){
           def withComponent(f: Service2 => Unit) = {
             f(Service2(l.head))
           }
@@ -41,10 +41,10 @@ class DeliciousLieTest {
   }
   val bakedComponent2 = BakedCons[Service2, BakedCons[Service1, BakedNil]](rawComponent2, bakedComponent1)
   
-  val rawComponent3 = new BakedLayer[Service2 :: Service1 :: HNil, Service3] {
+  val rawComponent3 = new Layer[Service2 :: Service1 :: HNil, Service3] {
     val withLayer = {
       l : (Service2 :: Service1 :: HNil) =>
-        new Layer[Service3](){
+        new BakedLayer[Service3](){
           def withComponent(f: Service3 => Unit) = {
             f(Service3(l.head))
           }
