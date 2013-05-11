@@ -50,7 +50,7 @@ class DeliciousLieTest {
     lifecycle.stop()
     expectLastCall()
     replay(lifecycle)
-    cake.burn({ l => {} })
+    cake.burn({l => {}})
     verify(lifecycle)
   }
 }
