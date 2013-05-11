@@ -15,7 +15,6 @@ class DeliciousLieTest {
   }
   val lifecycle = createMock(classOf[Service1Lifecycle])
 
-  val bakedNil = BakedNil()
   object rawComponent1 extends Layer[HNil, Service1] {
     val withLayer =
       for { f <- callback } yield {
@@ -44,7 +43,11 @@ class DeliciousLieTest {
     val withLayer = for {s1 <- context[Service1]} yield {"hello" }
   }
   
-  val cake = bakedNil wit rawComponent1 wit rawComponent2 wit rawComponent3 wit component4
+  object component5 extends BottomLayer[Int] {
+    val layer = 5
+  }
+  
+  val cake = bake wit rawComponent1 wit rawComponent2 wit rawComponent3 wit component4 //wit component5
 
   @Test
   def instantiatesComponentExactlyOnce() {
