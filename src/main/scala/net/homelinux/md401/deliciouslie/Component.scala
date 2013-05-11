@@ -1,8 +1,8 @@
 package net.homelinux.md401.deliciouslie
 
 import shapeless._
-import scalaz._
-import Scalaz._
+//import scalaz._
+//import Scalaz._
 
 case class ContextDependent[Deps <: HList, A](f: Deps => A)
 
@@ -13,14 +13,14 @@ object Implicits {
   //  	(implicit prepend: Prepend[Deps1, Deps2]): ContextDependent[prepend.Out, A] =
   //    ContextDependent({deps: prepend.Out => cd.f(deps.take(Deps1.length)).f(deps.drop(Deps1.length))})
   def instantiate[A](component: Component[A, HNil]) = {}
-  class ContextDependentMonad[Deps <: HList] extends Monad[({ type cd[A] = ContextDependent[Deps, A] })#cd] {
-    def point[A](f: => A) = ContextDependent({ deps => f })
-    def bind[A, B](fa: ContextDependent[Deps, A])(f: A => ContextDependent[Deps, B]) =
-      ContextDependent({ deps: Deps =>
-        f(fa.f(deps)).f(deps)
-      })
-  }
-  implicit def contextDependentMonad[Deps <: HList] = new ContextDependentMonad[Deps]
+//  class ContextDependentMonad[Deps <: HList] extends Monad[({ type cd[A] = ContextDependent[Deps, A] })#cd] {
+//    def point[A](f: => A) = ContextDependent({ deps => f })
+//    def bind[A, B](fa: ContextDependent[Deps, A])(f: A => ContextDependent[Deps, B]) =
+//      ContextDependent({ deps: Deps =>
+//        f(fa.f(deps)).f(deps)
+//      })
+//  }
+//  implicit def contextDependentMonad[Deps <: HList] = new ContextDependentMonad[Deps]
   def applyContext[B, OtherDeps <: HList, A](cd: ContextDependent[B :: OtherDeps, A], b: B): ContextDependent[OtherDeps, A] =
     ContextDependent({od: OtherDeps => cd.f(b :: od)})
 }
@@ -58,7 +58,10 @@ abstract class Cake[L <: HList: *->*[LeafComponent]#ƒÉ](l: L) {
 
   //Call this to build the context and run the run
   def bake() = {
-//    val components = l map {_.component()}
+    object extractComponent extends (LeafComponent ~> ({type l[A] = ContextDependent[HNil, A]})#l) {
+      def apply[A](lc: LeafComponent[A]): ContextDependent[HNil, A] = lc.component(identity)
+    }
+//    val components = l map extractComponent
 //	components.foldLeft(new EmptyContext())(null)
 //    run.f()
   }
