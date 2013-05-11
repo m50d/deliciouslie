@@ -25,7 +25,7 @@ object DeliciousLie {
   type ContextDependent[Deps <: HList, A] = Deps => A
 
   trait Layer[Deps <: HList, A] {
-    def withLayer: ContextDependent[Deps, BakedLayer[A]]
+    val withLayer: ContextDependent[Deps, BakedLayer[A]]
   }
 
   implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll[SmallDeps, LargeDeps]): Layer[LargeDeps, A] =
