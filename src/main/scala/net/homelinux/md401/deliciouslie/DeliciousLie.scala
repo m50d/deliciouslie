@@ -25,6 +25,12 @@ object DeliciousLie {
   type ContextDependent[Deps <: HList, A] = Deps => A
 
   trait Layer[Deps <: HList, A] {
+    object callback {
+      def map(g: (A => Unit) => Unit) = new BakedLayer[A] {
+        def withComponent(f: A => Unit) = g(f)
+      }
+    }
+    
     val withLayer: ContextDependent[Deps, BakedLayer[A]]
   }
 
