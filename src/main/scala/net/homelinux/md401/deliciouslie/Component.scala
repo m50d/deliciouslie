@@ -13,32 +13,28 @@ object Implicits {
 //  implicit def contextContext2BiggerContext[Deps1<: HList, Deps2 <: HList, A](cd: ContextDependent[Deps1, ContextDependent[Deps2, A]])
 //  	(implicit prepend: Prepend[Deps1, Deps2]): ContextDependent[prepend.Out, A] =
 //    ContextDependent({deps: prepend.Out => cd.f(deps.take(Deps1.length)).f(deps.drop(Deps1.length))})
-  def instantiate[A](component: ComponentImpl[A, HNil]) = {}
+  def instantiate[A](component: Component[A, HNil]) = {}
   class ContextDependentMonad[Deps <: HList] extends Monad[({type cd[A] = ContextDependent[Deps, A]})#cd] {
     def point[A](f: => A) = ContextDependent({deps => f})
     def bind[A, B](fa: ContextDependent[Deps, A])(f: A => ContextDependent[Deps, B]) =
       ContextDependent({deps: Deps => 
         f(fa.f(deps)).f(deps)})
   }
+  implicit def contextDependentMonad[Deps <: HList] = new ContextDependentMonad[Deps]
 }
 
 import Implicits._
 
-trait Component[Deps <: HList] {
-  val context = new Object(){
-    def foreach[A, B](f: A => B)(implicit selector: Selector[Deps, A]): ContextDependent[Deps, B] =
-      ContextDependent({deps => f(deps.select[A])})
-  }
-}
-
-trait ComponentImpl[A, Deps <: HList] {
+trait Component[A, Deps <: HList] {
   //What client code should implement
   def component[B](f: A => B): ContextDependent[Deps, B]
-//  def withComponent[B, PD <: HList](f: A :: PD => B): PD => B
+
+  def inject[B]()(implicit selector: Selector[Deps, B]): ContextDependent[Deps, B] =
+    ContextDependent({_.select[B]})
 }
 
 //Possibly unnecessary, but here for clarity
-trait LeafComponent[A] extends ComponentImpl[A, HNil] {
+trait LeafComponent[A] extends Component[A, HNil] {
   //What client code should implement
   def leafComponent[B](f: A => B): () => B
   override def component[B](f: A => B): ContextDependent[HNil, B] = leafComponent(f)
