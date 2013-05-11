@@ -18,31 +18,27 @@ class DeliciousLieTest {
   val bakedNil = BakedNil()
   val rawComponent1 = new Layer[HNil, Service1] {
     val withLayer =
-        for { f <- callback } yield {
-          lifecycle.start()
-          f(Service1())
-          lifecycle.stop()
-        }
+      for { f <- callback } yield {
+        lifecycle.start()
+        f(Service1())
+        lifecycle.stop()
+      }
   }
   val rawComponent2 = new Layer[Service1 :: HNil, Service2] {
-    val withLayer = {
-      l: (Service1 :: HNil) =>
-        new BakedLayer[Service2]() {
-          def withComponent(f: Service2 => Unit) = {
-            f(Service2(l.head))
-          }
-        }
+    val withLayer = for {
+      s1 <- context[Service1]
+      f <- callback
+    } yield {
+      f(Service2(s1))
     }
   }
 
   val rawComponent3 = new Layer[Service2 :: HNil, Service3] {
-    val withLayer = {
-      l: (Service2 :: HNil) =>
-        new BakedLayer[Service3]() {
-          def withComponent(f: Service3 => Unit) = {
-            f(Service3(l.head))
-          }
-        }
+    val withLayer = for {
+      s2 <- context[Service2]
+      f <- callback
+    } yield {
+    	f(Service3(s2))
     }
   }
   val cake = bakedNil wit rawComponent1 wit rawComponent2 wit rawComponent3
