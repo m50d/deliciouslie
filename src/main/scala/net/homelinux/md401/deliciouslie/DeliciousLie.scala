@@ -28,6 +28,14 @@ object DeliciousLie {
     def withLayer: ContextDependent[Deps, BakedLayer[A]]
   }
 
+  implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll[SmallDeps, LargeDeps]): Layer[LargeDeps, A] =
+    new Layer[LargeDeps, A] {
+      val withLayer = { lds: LargeDeps =>
+      	val (sds, _) = lds.removeAll[SmallDeps] 
+      	layer.withLayer(sds)
+      }
+    }
+
   sealed trait BakedCake[Layers] {
     type BurntType <: HList
     def burn(f: BurntType => Unit): Unit
@@ -50,5 +58,5 @@ object DeliciousLie {
     }
     def wit[B](layer: Layer[BurntType, B]) = BakedCons[B, BakedCons[A, PreviousLayers]](layer, this)
   }
-  
+
 }
