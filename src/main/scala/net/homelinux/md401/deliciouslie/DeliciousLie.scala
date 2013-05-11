@@ -33,7 +33,7 @@ object DeliciousLie {
     def burn(f: BurntType => Unit): Unit
   }
 
-  class BakedNil extends BakedCake[HNil] {
+  final class BakedNil extends BakedCake[HNil] {
     type BurntType = HNil
     def burn(f: HNil => Unit) = f(HNil)
   }
