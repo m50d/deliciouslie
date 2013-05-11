@@ -56,7 +56,7 @@ object DeliciousLie {
         })
       })
     }
-    def wit[B](layer: Layer[BurntType, B]) = BakedCons[B, BakedCons[A, PreviousLayers]](layer, this)
+    def wit[B, LayerDeps <: HList](layer: Layer[LayerDeps, B])(implicit removeAll: RemoveAll[LayerDeps, BurntType]) = BakedCons[B, BakedCons[A, PreviousLayers]](layer, this)
   }
 
 }
