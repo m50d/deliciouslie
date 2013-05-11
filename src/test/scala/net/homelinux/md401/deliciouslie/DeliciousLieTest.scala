@@ -26,7 +26,7 @@ class DeliciousLieTest {
   }
   val rawComponent2 = new Layer[Service1 :: HNil, Service2] {
     val withLayer = for {
-      s1 <- context[Service1]
+      s1 <- context
       f <- callback
     } yield {
       f(Service2(s1))
@@ -35,7 +35,7 @@ class DeliciousLieTest {
 
   val rawComponent3 = new Layer[Service2 :: HNil, Service3] {
     val withLayer = for {
-      s2 <- context[Service2]
+      s2 <- context
       f <- callback
     } yield {
     	f(Service3(s2))
