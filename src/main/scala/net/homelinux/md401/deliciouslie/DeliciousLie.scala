@@ -30,22 +30,18 @@ object DeliciousLie {
 
   sealed trait BakedCake[Layers] {
     type BurntType <: HList
+    def burn(): BurntType
   }
   class BakedNil extends BakedCake[HNil] {
     type BurntType = HNil
+    def burn() = HNil
   }
 
   final case class BakedCons[A, PreviousLayers <: BakedCake[_]](a: RawLayer[PreviousLayers#BurntType, A], pl: PreviousLayers) extends BakedCake[A :: PreviousLayers#BurntType] {
     type BurntType = A :: PreviousLayers#BurntType
-  }
-  
-  
-  object BurnCake extends Poly1 {
-    implicit def caseBn = at[BakedNil](bn => HNil)
-    implicit def caseBc[A, PreviousLayers <: BakedCake[_]]: Case1[BakedCons[A, PreviousLayers]] = at[BakedCons[A, PreviousLayers]]({
-      bc => val previousBurn: PreviousLayers#BurntType = recursionHelper(bc.pl)
-      bc.a.withLayer(previousBurn).withLayer(identity) :: previousBurn
-    })
-    def recursionHelper(bac: BakedCake[_]): bac.BurntType = null.asInstanceOf
+    def burn() = {
+      val previousBurn: PreviousLayers#BurntType = pl.burn()
+      a.withLayer(previousBurn).withLayer(identity) :: previousBurn
+    }
   }
 }
