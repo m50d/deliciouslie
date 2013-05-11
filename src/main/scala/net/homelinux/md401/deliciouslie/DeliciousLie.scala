@@ -16,7 +16,7 @@ object DeliciousLie {
     /**
      * Call f with a fully initialized A, and perform any necessary teardown afterwards
      */
-    def withComponent(f: A => Unit): Unit
+    def withService(f: A => Unit): Unit
   }
 
   /**
@@ -27,8 +27,8 @@ object DeliciousLie {
 
   /**
    * The general case of a component: provides a service A, given the context Deps.
-   * Client code should implement withLayer; context and callback are provided as syntactic sugar
-   * to make implementing withLayer easier.
+   * Client code should implement withService; context and callback are provided as syntactic sugar
+   * to make implementing withService easier.
    */
   trait Layer[Deps <: HList, A] {
     /**
@@ -36,7 +36,7 @@ object DeliciousLie {
      */
     object callback {
       def map(g: (A => Unit) => Unit): ContextDependent[Deps, BakedLayer[A]] = deps => new BakedLayer[A] {
-        def withComponent(f: A => Unit) = g(f)
+        def withService(f: A => Unit) = g(f)
       }
     }
     
@@ -49,7 +49,7 @@ object DeliciousLie {
     } = new Object() {
       def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]] = { deps =>
         new BakedLayer[A] {
-          def withComponent(f: A => Unit) = g(deps.select[B])(deps).withComponent(f)
+          def withService(f: A => Unit) = g(deps.select[B])(deps).withService(f)
         }
       }
       /**
@@ -57,12 +57,12 @@ object DeliciousLie {
        */
       def map(g: B => A): ContextDependent[Deps, BakedLayer[A]] = { deps =>
         new BakedLayer[A] {
-          def withComponent(f: A => Unit) = f(g(deps.select[B]))
+          def withService(f: A => Unit) = f(g(deps.select[B]))
         }
       }
     }
 
-    val withLayer: ContextDependent[Deps, BakedLayer[A]]
+    val withService: ContextDependent[Deps, BakedLayer[A]]
   }
 
   /**
@@ -71,9 +71,9 @@ object DeliciousLie {
    */
   trait BottomLayer[A] extends Layer[HNil, A] {
     def layer: A
-    override val withLayer = { _: HNil =>
+    override val withService = { _: HNil =>
       new BakedLayer[A] {
-        def withComponent(f: A => Unit) = f(layer)
+        def withService(f: A => Unit) = f(layer)
       }
     }
   }
@@ -92,9 +92,9 @@ object Impl {
    */
   implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll[SmallDeps, LargeDeps]): Layer[LargeDeps, A] =
     new Layer[LargeDeps, A] {
-      val withLayer = { lds: LargeDeps =>
+      val withService = { lds: LargeDeps =>
         val (sds, _) = lds.removeAll[SmallDeps]
-        layer.withLayer(sds)
+        layer.withService(sds)
       }
     }
 
@@ -120,7 +120,7 @@ object Impl {
     type BurntType = A :: PreviousLayers#BurntType
     def burn(f: A :: PreviousLayers#BurntType => Unit) = {
       pl.burn({ plb: PreviousLayers#BurntType =>
-        a.withLayer(plb).withComponent({
+        a.withService(plb).withService({
           al => f(al :: plb)
         })
       })
