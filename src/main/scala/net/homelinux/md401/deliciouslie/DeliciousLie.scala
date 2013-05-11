@@ -19,7 +19,7 @@ import BasisConstraint._
 
 object DeliciousLie {
   trait Layer[A] {
-    def withLayer[B](f: A => B): B
+    def withLayer(f: A => Unit): Unit
   }
 
   type ContextDependent[Deps <: HList, A] = Deps => A
@@ -30,17 +30,17 @@ object DeliciousLie {
 
   sealed trait BakedCake[Layers] {
     type BurntType <: HList
-    def burn[A](f: BurntType => A): A
+    def burn(f: BurntType => Unit): Unit
   }
 
   class BakedNil extends BakedCake[HNil] {
     type BurntType = HNil
-    def burn[A](f: HNil => A) = f(HNil)
+    def burn(f: HNil => Unit) = f(HNil)
   }
 
   final case class BakedCons[A, PreviousLayers <: BakedCake[_]](a: RawLayer[PreviousLayers#BurntType, A], pl: PreviousLayers) extends BakedCake[A :: PreviousLayers#BurntType] {
     type BurntType = A :: PreviousLayers#BurntType
-    def burn[B](f: A :: PreviousLayers#BurntType => B) = {
+    def burn(f: A :: PreviousLayers#BurntType => Unit) = {
       pl.burn({ plb: PreviousLayers#BurntType =>
         a.withLayer(plb).withLayer({
           al => f(al :: plb)
