@@ -21,6 +21,8 @@ object Implicits {
       })
   }
   implicit def contextDependentMonad[Deps <: HList] = new ContextDependentMonad[Deps]
+  def applyContext[B, OtherDeps <: HList, A](cd: ContextDependent[B :: OtherDeps, A], b: B): ContextDependent[OtherDeps, A] =
+    ContextDependent({od: OtherDeps => cd.f(b :: od)})
 }
 
 import Implicits._
