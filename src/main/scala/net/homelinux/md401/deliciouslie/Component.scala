@@ -56,6 +56,6 @@ abstract class Cake[L <: HList: *->*[Option]#É…](l: L) {
 
   //Call this to build the context and run the run
   def bake() = {
-
+//	l.foldLeft(new EmptyContext())(null)
   }
 }
