@@ -20,7 +20,7 @@ class DeliciousLieTest {
     val withLayer = {
       hn: HNil =>
         new Layer[Service1](){
-          def withLayer(f: Service1 => Unit) = {
+          def withComponent(f: Service1 => Unit) = {
             lifecycle.start()
             f(Service1())
             lifecycle.stop()
@@ -33,7 +33,7 @@ class DeliciousLieTest {
     val withLayer = {
       l : (Service1 :: HNil) =>
         new Layer[Service2](){
-          def withLayer(f: Service2 => Unit) = {
+          def withComponent(f: Service2 => Unit) = {
             f(Service2(l.head))
           }
         }
@@ -45,7 +45,7 @@ class DeliciousLieTest {
     val withLayer = {
       l : (Service2 :: Service1 :: HNil) =>
         new Layer[Service3](){
-          def withLayer(f: Service3 => Unit) = {
+          def withComponent(f: Service3 => Unit) = {
             f(Service3(l.head))
           }
         }

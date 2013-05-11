@@ -19,7 +19,7 @@ import BasisConstraint._
 
 object DeliciousLie {
   trait Layer[A] {
-    def withLayer(f: A => Unit): Unit
+    def withComponent(f: A => Unit): Unit
   }
 
   type ContextDependent[Deps <: HList, A] = Deps => A
@@ -42,7 +42,7 @@ object DeliciousLie {
     type BurntType = A :: PreviousLayers#BurntType
     def burn(f: A :: PreviousLayers#BurntType => Unit) = {
       pl.burn({ plb: PreviousLayers#BurntType =>
-        a.withLayer(plb).withLayer({
+        a.withLayer(plb).withComponent({
           al => f(al :: plb)
         })
       })
