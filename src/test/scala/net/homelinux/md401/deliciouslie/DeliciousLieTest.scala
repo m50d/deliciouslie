@@ -16,7 +16,7 @@ class DeliciousLieTest {
   val lifecycle = createMock(classOf[Service1Lifecycle])
 
   val bakedNil = BakedNil()
-  val rawComponent1 = new Layer[HNil, Service1] {
+  object rawComponent1 extends Layer[HNil, Service1] {
     val withLayer =
       for { f <- callback } yield {
         lifecycle.start()
@@ -24,7 +24,7 @@ class DeliciousLieTest {
         lifecycle.stop()
       }
   }
-  val rawComponent2 = new Layer[Service1 :: HNil, Service2] {
+  object rawComponent2 extends Layer[Service1 :: HNil, Service2] {
     val withLayer = for {
       s1 <- context
       f <- callback
@@ -33,7 +33,7 @@ class DeliciousLieTest {
     }
   }
 
-  val rawComponent3 = new Layer[Service2 :: HNil, Service3] {
+  object rawComponent3 extends Layer[Service2 :: HNil, Service3] {
     val withLayer = for {
       s2 <- context
       f <- callback
