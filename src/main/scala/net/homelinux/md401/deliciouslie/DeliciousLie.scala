@@ -30,10 +30,18 @@ object DeliciousLie {
         def withComponent(f: A => Unit) = g(f)
       }
     }
-    def context[B]()(implicit selector: Selector[Deps, B]): { def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]] } = new Object() {
+    def context[B]()(implicit selector: Selector[Deps, B]): { 
+      def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]]
+      def map(g: B => A): ContextDependent[Deps, BakedLayer[A]]
+      } = new Object() {
       def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]] = { deps =>
         new BakedLayer[A] {
           def withComponent(f: A => Unit) = g(deps.select[B])(deps).withComponent(f)
+        }
+      }
+      def map(g: B => A): ContextDependent[Deps, BakedLayer[A]] = { deps =>
+        new BakedLayer[A] {
+          def withComponent(f: A => Unit) = f(g(deps.select[B]))
         }
       }
     }

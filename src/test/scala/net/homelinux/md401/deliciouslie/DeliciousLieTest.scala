@@ -27,18 +27,16 @@ class DeliciousLieTest {
   object rawComponent2 extends Layer[Service1 :: HNil, Service2] {
     val withLayer = for {
       s1 <- context
-      f <- callback
     } yield {
-      f(Service2(s1))
+      Service2(s1)
     }
   }
 
   object rawComponent3 extends Layer[Service2 :: HNil, Service3] {
     val withLayer = for {
       s2 <- context
-      f <- callback
     } yield {
-    	f(Service3(s2))
+      Service3(s2)
     }
   }
   val cake = bakedNil wit rawComponent1 wit rawComponent2 wit rawComponent3
@@ -50,7 +48,7 @@ class DeliciousLieTest {
     lifecycle.stop()
     expectLastCall()
     replay(lifecycle)
-    cake.burn({l => {}})
+    cake.burn({ l => {} })
     verify(lifecycle)
   }
 }
