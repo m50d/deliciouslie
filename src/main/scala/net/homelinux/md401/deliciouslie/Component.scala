@@ -40,6 +40,12 @@ trait LeafComponent[A] extends Component[A, HNil] {
   override def component[B](f: A => B): ContextDependent[HNil, B] = leafComponent(f)
 }
 
+sealed trait Context[Singletons <: HList]
+
+sealed class EmptyContext extends Context[HNil] {}
+
+final case class ConsContext[H, T <: Context[_]]()
+
 import TypeOperators._
 import HList._
 import UnaryTCConstraint._
