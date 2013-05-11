@@ -18,8 +18,6 @@ import BasisConstraint._
 //}
 
 object DeliciousLie {
-  type BurntLayer[A] = A
-
   trait Layer[A] {
     def withLayer[B](f: A => B): B
   }
