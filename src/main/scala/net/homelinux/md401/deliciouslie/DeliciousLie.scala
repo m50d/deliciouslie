@@ -27,6 +27,26 @@ class Cake[Layers <: HList: *->*[Layer]#λ](layers: Layers) {
   }
 }
 
+sealed trait BakedCake[Layers] {
+  type BurntType <: HList
+}
+
+class BakedNil extends BakedCake[HNil] {
+  type BurntType = HNil
+}
+
+final case class BakedCons[A, PreviousLayers <: HList: *->*[BakedCake]#λ](a: RawLayer[PreviousLayers, A], pl: PreviousLayers) {
+  type BurntType = A :: HNil
+}
+
+object BurnCake extends (BakedCake ~> Id) {
+  def apply(bn: BakedNil) = Nil
+  def apply[A, PreviousLayers <: HList: *->*[BakedCake]#λ](bc: BakedCons[A, PreviousLayers]): bc.BurntType = {
+    val previousBurn = apply(bc.pl)
+    bc.a.withLayer.f(previousBurn) :: previousBurn
+  }
+}
+
 object DeliciousLie {
-  type BurntLayer[A] = A
+	type BurntLayer[A] = A
 }
