@@ -20,6 +20,18 @@
             <artifactId>scalaz-core_${scala.version.binarycompatible}</artifactId>
             <version>7.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <properties>
         <scala.version>2.10.0</scala.version>

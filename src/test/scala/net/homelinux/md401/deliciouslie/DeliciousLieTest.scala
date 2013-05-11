@@ -2,6 +2,8 @@ package net.homelinux.md401.deliciouslie
 
 import net.homelinux.md401.deliciouslie.DeliciousLie._
 import shapeless._
+import org.easymock.EasyMock._
+import org.junit.Test
 
 class DeliciousLieTest {
   case class Service1()
@@ -11,6 +13,7 @@ class DeliciousLieTest {
     def start(): Unit
     def stop(): Unit
   }
+  val lifecycle = createMock(classOf[Service1Lifecycle])
   
   val bakedNil = new BakedNil()
   val rawComponent1 = new RawLayer[HNil, Service1] {
@@ -35,4 +38,27 @@ class DeliciousLieTest {
     }
   }
   val bakedComponent2 = BakedCons[Service2, BakedCons[Service1, BakedNil]](rawComponent2, bakedComponent1)
+  
+  val rawComponent3 = new RawLayer[Service2 :: Service1 :: HNil, Service3] {
+    val withLayer = {
+      l : (Service2 :: Service1 :: HNil) =>
+        new Layer[Service3](){
+          def withLayer[A](f: Service3 => A) = {
+            f(Service3(l.head))
+          }
+        }
+    }
+  }
+  val bakedComponent3 = BakedCons[Service3, BakedCons[Service2, BakedCons[Service1, BakedNil]]](rawComponent3, bakedComponent2)
+  
+  @Test
+  def instantiatesComponentExactlyOnce() {
+    lifecycle.start()
+    expectLastCall()
+    lifecycle.stop()
+    expectLastCall()
+    replay(lifecycle)
+    bakedComponent3.burn({l => {}})
+    verify(lifecycle)
+  }
 }
