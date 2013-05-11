@@ -72,12 +72,13 @@ object WebserverComponent extends Layer[Log :: HNil, Webserver] {
 //instantiating a cake - this will not call our init code defined in the yield blocks
 //compiler enforces safety; e.g. LogComponent must come before UserFetcherComponent or WebserverComponent
 //observe that unlike in the classical cake pattern circular dependencies are impossible
-//"wit" syntax is deliberately evocative of "with" as we would use in the classical cake pattern
+//"wit" syntax is deliberately evocative of "with" as used in the classical cake pattern
 val cake = bake wit LogComponent wit DatabaseComponent wit UserFetcherComponent wit WebserverComponent
 
 //to actually run the lifecycle, call burn
-cake.burn({ services =>
-    //The full list of services is available here if we need them
-    while(!shouldShutDown()) Thread.sleep(1000)
+cake.burn({
+    //We can access the services as a HList if we need to
+    services =>
+      while(!shouldShutDown()) Thread.sleep(1000)
   })
 ````
