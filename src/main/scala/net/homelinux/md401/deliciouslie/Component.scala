@@ -5,8 +5,9 @@ import shapeless._
 case class ContextDependent[Deps <: HList, A](f: Deps => A)
 
 object Implicits {
-//  implicit def noContext2Function[A](cd: ContextDependent[HNil, A]): () => A
-//   = () => cd.f(HNil)
+  implicit def noContext2Function[A](cd: ContextDependent[HNil, A]): () => A
+   = () => cd.f(HNil)
+  implicit def function2NoContext[A](f: () => A): ContextDependent[HNil, A] = ContextDependent({HNil => f()})
 //  implicit def contextContext2BiggerContext[Deps1<: HList, Deps2 <: HList, A](cd: ContextDependent[Deps1, ContextDependent[Deps2, A]])
 //  	(implicit prepend: Prepend[Deps1, Deps2]): ContextDependent[prepend.Out, A] =
 //    ContextDependent({deps: prepend.Out => cd.f(deps.take(Deps1.length)).f(deps.drop(Deps1.length))})
@@ -30,4 +31,9 @@ abstract class Cake[Deps <: HList]() {
   //Client code should implement
   //Will be called with the real cake
   def run(): ContextDependent[Deps, Unit]
+  
+  //Call this to build the context and run the run
+  def start() = {
+    
+  }
 }
