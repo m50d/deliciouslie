@@ -28,7 +28,7 @@ class DeliciousLieTest {
         }
     }
   }
-  val bakedComponent1 = BakedCons[Service1, BakedNil](rawComponent1, bakedNil)
+  val bakedComponent1 = bakedNil wit rawComponent1
   val rawComponent2 = new Layer[Service1 :: HNil, Service2] {
     val withLayer = {
       l : (Service1 :: HNil) =>
@@ -39,7 +39,7 @@ class DeliciousLieTest {
         }
     }
   }
-  val bakedComponent2 = BakedCons[Service2, BakedCons[Service1, BakedNil]](rawComponent2, bakedComponent1)
+  val bakedComponent2 = bakedComponent1 wit rawComponent2
   
   val rawComponent3 = new Layer[Service2 :: Service1 :: HNil, Service3] {
     val withLayer = {
@@ -51,7 +51,7 @@ class DeliciousLieTest {
         }
     }
   }
-  val bakedComponent3 = BakedCons[Service3, BakedCons[Service2, BakedCons[Service1, BakedNil]]](rawComponent3, bakedComponent2)
+  val bakedComponent3 = bakedComponent2 wit rawComponent3
   
   @Test
   def instantiatesComponentExactlyOnce() {

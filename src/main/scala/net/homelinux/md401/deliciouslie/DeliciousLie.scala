@@ -36,6 +36,7 @@ object DeliciousLie {
   final case class BakedNil() extends BakedCake[HNil] {
     type BurntType = HNil
     def burn(f: HNil => Unit) = f(HNil)
+    def wit[A](layer: Layer[BurntType, A]) = BakedCons[A, BakedNil](layer, this)
   }
 
   final case class BakedCons[A, PreviousLayers <: BakedCake[_]](a: Layer[PreviousLayers#BurntType, A], pl: PreviousLayers) extends BakedCake[A :: PreviousLayers#BurntType] {
@@ -47,5 +48,7 @@ object DeliciousLie {
         })
       })
     }
+    def wit[B](layer: Layer[BurntType, B]) = BakedCons[B, BakedCons[A, PreviousLayers]](layer, this)
   }
+  
 }
