@@ -26,19 +26,19 @@ object DeliciousLie {
 
   trait Layer[Deps <: HList, A] {
     object callback {
-      def map(g: (A => Unit) => Unit) = new BakedLayer[A] {
+      def map(g: (A => Unit) => Unit): ContextDependent[Deps, BakedLayer[A]] = deps => new BakedLayer[A] {
         def withComponent(f: A => Unit) = g(f)
       }
     }
-    
+
     val withLayer: ContextDependent[Deps, BakedLayer[A]]
   }
 
   implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll[SmallDeps, LargeDeps]): Layer[LargeDeps, A] =
     new Layer[LargeDeps, A] {
       val withLayer = { lds: LargeDeps =>
-      	val (sds, _) = lds.removeAll[SmallDeps] 
-      	layer.withLayer(sds)
+        val (sds, _) = lds.removeAll[SmallDeps]
+        layer.withLayer(sds)
       }
     }
 

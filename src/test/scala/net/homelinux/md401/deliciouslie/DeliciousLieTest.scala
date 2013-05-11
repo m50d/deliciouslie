@@ -17,14 +17,12 @@ class DeliciousLieTest {
 
   val bakedNil = BakedNil()
   val rawComponent1 = new Layer[HNil, Service1] {
-    val withLayer = {
-      hn: HNil =>
+    val withLayer =
         for { f <- callback } yield {
           lifecycle.start()
           f(Service1())
           lifecycle.stop()
         }
-    }
   }
   val rawComponent2 = new Layer[Service1 :: HNil, Service2] {
     val withLayer = {
