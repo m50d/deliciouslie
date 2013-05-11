@@ -16,6 +16,8 @@ Goals
   * Implemented in pure scala, without macros
   * Only dependency is Shapeless
   * Attempts to minimize syntactic overhead
+   * Does require somewhat longer component implementations than "classic" cake pattern
+   * However, doesn't require distinct interface/implementation declarations for each component
  * Safe
   * Dependencies are checked at compile time
   * Service initialization happens in the correct order in the cake
@@ -39,6 +41,8 @@ object DatabaseComponent extends Layer[HNil, DatabaseConnection] {
     for { f <- callback } yield {
       val dbConn = setupDatabaseConnection()
       try {
+        //dbConn never escapes this scope except through f, thus
+        //should always be in the correct state anywhere it's in scope
         f(dbConn)
       } finally {
         dbConn.tearDown()
