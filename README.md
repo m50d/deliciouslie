@@ -81,4 +81,7 @@ cake.burn({
     services =>
       while(!shouldShutDown()) Thread.sleep(1000)
   })
+
+//burn can be called repeatedly if we want to keep the same wiring but run the setup and teardown again each time
+//e.g. for a per-request context in a web server
 ````
