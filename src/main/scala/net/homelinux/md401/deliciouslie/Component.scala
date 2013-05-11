@@ -22,6 +22,8 @@ object Implicits {
   }
 }
 
+import Implicits._
+
 trait Component[Deps <: HList] {
   val context = new Object(){
     def foreach[A, B](f: A => B)(implicit selector: Selector[Deps, A]): ContextDependent[Deps, B] =
@@ -31,8 +33,15 @@ trait Component[Deps <: HList] {
 
 trait ComponentImpl[A, Deps <: HList] {
   //What client code should implement
-  def component[B](f: A => B): Deps => B
+  def component[B](f: A => B): ContextDependent[Deps, B]
 //  def withComponent[B, PD <: HList](f: A :: PD => B): PD => B
+}
+
+//Possibly unnecessary, but here for clarity
+trait LeafComponent[A] extends ComponentImpl[A, HNil] {
+  //What client code should implement
+  def leafComponent[B](f: A => B): () => B
+  override def component[B](f: A => B): ContextDependent[HNil, B] = leafComponent(f)
 }
 
 abstract class Cake[Deps <: HList]() {
