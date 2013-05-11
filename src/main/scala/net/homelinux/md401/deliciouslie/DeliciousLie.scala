@@ -15,7 +15,8 @@ trait Layer[A] {
 }
 
 class Cake[Layers <: HList: *->*[Layer]#λ](layers: Layers) {
-  def withCake[RequiredLayers <: HList : Basis[Layers]#λ, B](f: RequiredLayers => B): B = {
-    null.asInstanceOf[B]
+  def withCake[RequiredLayers <: HList, B](f: RequiredLayers => B)(implicit removeAll: RemoveAll[RequiredLayers,Layers]): B = {
+    val (requiredLayers, otherLayers) = layers.removeAll[RequiredLayers]
+    f(requiredLayers)
   }
 }
