@@ -13,16 +13,16 @@ object Implicits {
   //  	(implicit prepend: Prepend[Deps1, Deps2]): ContextDependent[prepend.Out, A] =
   //    ContextDependent({deps: prepend.Out => cd.f(deps.take(Deps1.length)).f(deps.drop(Deps1.length))})
   def instantiate[A](component: Component[A, HNil]) = {}
-//  class ContextDependentMonad[Deps <: HList] extends Monad[({ type cd[A] = ContextDependent[Deps, A] })#cd] {
-//    def point[A](f: => A) = ContextDependent({ deps => f })
-//    def bind[A, B](fa: ContextDependent[Deps, A])(f: A => ContextDependent[Deps, B]) =
-//      ContextDependent({ deps: Deps =>
-//        f(fa.f(deps)).f(deps)
-//      })
-//  }
-//  implicit def contextDependentMonad[Deps <: HList] = new ContextDependentMonad[Deps]
+  //  class ContextDependentMonad[Deps <: HList] extends Monad[({ type cd[A] = ContextDependent[Deps, A] })#cd] {
+  //    def point[A](f: => A) = ContextDependent({ deps => f })
+  //    def bind[A, B](fa: ContextDependent[Deps, A])(f: A => ContextDependent[Deps, B]) =
+  //      ContextDependent({ deps: Deps =>
+  //        f(fa.f(deps)).f(deps)
+  //      })
+  //  }
+  //  implicit def contextDependentMonad[Deps <: HList] = new ContextDependentMonad[Deps]
   def applyContext[B, OtherDeps <: HList, A](cd: ContextDependent[B :: OtherDeps, A], b: B): ContextDependent[OtherDeps, A] =
-    ContextDependent({od: OtherDeps => cd.f(b :: od)})
+    ContextDependent({ od: OtherDeps => cd.f(b :: od) })
 }
 
 import Implicits._
@@ -56,13 +56,25 @@ abstract class Cake[L <: HList: *->*[LeafComponent]#É…](l: L) {
   //Will be called with the real cake
   def run(): ContextDependent[L, Unit]
 
-  //Call this to build the context and run the run
-  def bake() = {
-    object extractComponent extends (LeafComponent ~> ({type l[A] = ContextDependent[HNil, A]})#l) {
-      def apply[A](lc: LeafComponent[A]): ContextDependent[HNil, A] = lc.component(identity)
-    }
-//    val components = l map extractComponent
-//	components.foldLeft(new EmptyContext())(null)
-//    run.f()
+  object extractComponent extends (LeafComponent ~> ({ type l[A] = ContextDependent[HNil, A] })#l) {
+    def apply[A](lc: LeafComponent[A]): ContextDependent[HNil, A] = lc.component(identity)
   }
+  //Call this to build the context and run the run
+  def bake()(implicit mapper: Mapper[extractComponent.type, L]) = {
+    val components = l map extractComponent
+    //	components.foldLeft(new EmptyContext())(null)
+    //    run.f()
+  }
+}
+
+import shapeless._
+
+object ShapelessTest {
+  case class MyHolder[A](a: A)
+  object extractA extends (MyHolder ~> Option) {
+    def apply[A](mh: MyHolder[A]): Option[A] = Some(mh.a)
+  }
+  def unpackList[L <: HList: *->*[MyHolder]#É…](l: L)(implicit mapper: shapeless.Mapper[net.homelinux.md401.deliciouslie.ShapelessTest.extractA.type, L]) =
+    l map extractA
+  unpackList(MyHolder("foo") :: MyHolder(5) :: HNil)
 }
