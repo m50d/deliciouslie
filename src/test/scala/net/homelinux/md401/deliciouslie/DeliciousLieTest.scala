@@ -15,7 +15,7 @@ class DeliciousLieTest {
   }
   val lifecycle = createMock(classOf[Service1Lifecycle])
   
-  val bakedNil = new BakedNil()
+  val bakedNil = BakedNil()
   val rawComponent1 = new RawLayer[HNil, Service1] {
     val withLayer = {
       hn: HNil =>
