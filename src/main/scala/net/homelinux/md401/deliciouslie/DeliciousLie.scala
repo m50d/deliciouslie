@@ -6,17 +6,6 @@ import TypeOperators._
 import HList._
 import BasisConstraint._
 
-//class Cake[Layers <: HList: *->*[Layer]#λ](layers: Layers) {
-//  def withCake[RequiredLayers <: HList, A](f: RequiredLayers => A)(implicit removeAll: RemoveAll[RequiredLayers, Layers]): A = {
-//    val (requiredLayers, otherLayers) = layers.removeAll[RequiredLayers]
-//    f(requiredLayers)
-//  }
-//  def bakeLayer[RequiredLayers <: HList, A](rawLayer: RawLayer[RequiredLayers, A])(implicit removeAll: RemoveAll[RequiredLayers, Layers]): Cake[Layer[A] :: Layers] = {
-//    val bakedLayer: Layer[A] = withCake(rawLayer.withLayer.f)
-//    new Cake(bakedLayer :: layers)
-//  }
-//}
-
 object DeliciousLie {
   trait BakedLayer[A] {
     def withComponent(f: A => Unit): Unit
@@ -30,10 +19,10 @@ object DeliciousLie {
         def withComponent(f: A => Unit) = g(f)
       }
     }
-    def context[B]()(implicit selector: Selector[Deps, B]): { 
+    def context[B]()(implicit selector: Selector[Deps, B]): {
       def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]]
       def map(g: B => A): ContextDependent[Deps, BakedLayer[A]]
-      } = new Object() {
+    } = new Object() {
       def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]] = { deps =>
         new BakedLayer[A] {
           def withComponent(f: A => Unit) = g(deps.select[B])(deps).withComponent(f)
@@ -47,6 +36,15 @@ object DeliciousLie {
     }
 
     val withLayer: ContextDependent[Deps, BakedLayer[A]]
+  }
+
+  trait BottomLayer[A] extends Layer[HNil, A] {
+    def layer: A
+    override val withLayer = { _: HNil =>
+      new BakedLayer[A] {
+        def withComponent(f: A => Unit) = f(layer)
+      }
+    }
   }
 
   implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll[SmallDeps, LargeDeps]): Layer[LargeDeps, A] =
