@@ -6,6 +6,8 @@ import shapeless._
 
 case class ContextDependent[Deps <: HList, A](f: Deps => A)
 
+case class PartiallyBaked[Deps <: HList, Baked <: HList, A](baked: Baked, f: Deps => A)
+
 object Implicits {
   implicit def noContext2Function[A](cd: ContextDependent[HNil, A]): () => A = () => cd.f(HNil)
   implicit def function2NoContext[A](f: () => A): ContextDependent[HNil, A] = ContextDependent({ HNil => f() })
@@ -59,6 +61,11 @@ abstract class Cake[L <: HList: *->*[LeafComponent]#ƒÉ](l: L) {
   object extractComponent extends (LeafComponent ~> ({ type l[A] = ContextDependent[HNil, A] })#l) {
     def apply[A](lc: LeafComponent[A]): ContextDependent[HNil, A] = lc.component(identity)
   }
+  
+  object combineComponents extends Poly {
+    
+  }
+  
   //Call this to build the context and run the run
   def bake()(implicit mapper: Mapper[extractComponent.type, L]) = {
     val components = l map extractComponent
