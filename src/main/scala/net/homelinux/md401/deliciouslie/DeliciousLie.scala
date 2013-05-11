@@ -28,4 +28,5 @@ class Cake[Layers <: HList: *->*[Layer]#λ](layers: Layers) {
 }
 
 object DeliciousLie {
+  type BurntLayer[A] = A
 }
