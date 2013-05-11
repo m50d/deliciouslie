@@ -91,7 +91,8 @@ object DeliciousLie {
 
 object Impl {
   /**
-   * We can always view a component which depends on a small context as depending on a larger context
+   * We can always view a component which depends on a small context as depending on a larger context (as long as the larger context contains all the services
+   * that the smaller one does)
    */
   implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll[SmallDeps, LargeDeps]): Layer[LargeDeps, A] =
     new Layer[LargeDeps, A] {
@@ -103,7 +104,7 @@ object Impl {
 
   /**
    * An assembled cake: a list of layers such that each depends only (and, for convenience, precisely) on those to the left of it
-   * This is similar to a HList (and could possibly be modeled with a KList)
+   * This is similar to a HList (and could possibly be modeled with a KList, but I found the type constraints impractical to express)
    */
   sealed trait BakedCake[Layers] {
     /**
@@ -113,6 +114,7 @@ object Impl {
 
     /**
      * Run the whole cake, including any lifecycle: initialize all services, call f with this list of services, then perform any necessary teardown
+     * Should be reusable (i.e. it's possible to call burn several times on the same cake)
      */
     def burn(f: BurntType => Unit): Unit
   }

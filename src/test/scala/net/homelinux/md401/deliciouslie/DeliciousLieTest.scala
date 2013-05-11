@@ -73,7 +73,15 @@ class DeliciousLieTest {
   val cake = bake wit rawComponent1 wit rawComponent2 wit rawComponent3 wit component4 wit component5
 
   @Test
-  def instantiatesComponentExactlyOnce() {
+  def instantiatesComponentExactlyOncePerBurn() {
+    lifecycle.start()
+    expectLastCall()
+    lifecycle.stop()
+    expectLastCall()
+    replay(lifecycle)
+    cake.burn({ l => {} })
+    verify(lifecycle)
+    reset(lifecycle)
     lifecycle.start()
     expectLastCall()
     lifecycle.stop()
