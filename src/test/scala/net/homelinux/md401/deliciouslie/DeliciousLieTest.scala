@@ -39,9 +39,9 @@ class DeliciousLieTest {
     }
   }
   
-  val rawComponent3 = new Layer[Service2 :: Service1 :: HNil, Service3] {
+  val rawComponent3 = new Layer[Service2 :: HNil, Service3] {
     val withLayer = {
-      l : (Service2 :: Service1 :: HNil) =>
+      l : (Service2 :: HNil) =>
         new BakedLayer[Service3](){
           def withComponent(f: Service3 => Unit) = {
             f(Service3(l.head))
