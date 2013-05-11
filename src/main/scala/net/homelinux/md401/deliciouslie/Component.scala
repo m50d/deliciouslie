@@ -49,7 +49,7 @@ abstract class Cake[L <: HList: *->*[Option]#É…](l: L) {
   //  def run(): ContextDependent[Deps, Unit]
 
   //Call this to build the context and run the run
-  def start() = {
+  def bake() = {
 
   }
 }
