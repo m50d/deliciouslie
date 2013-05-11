@@ -51,13 +51,15 @@ final case class ConsContext[H, T <: Context[_]]()
 import TypeOperators._
 import HList._
 import UnaryTCConstraint._
-abstract class Cake[L <: HList: *->*[Option]#É…](l: L) {
+abstract class Cake[L <: HList: *->*[LeafComponent]#É…](l: L) {
   //Client code should implement
   //Will be called with the real cake
-  //  def run(): ContextDependent[Deps, Unit]
+  def run(): ContextDependent[L, Unit]
 
   //Call this to build the context and run the run
   def bake() = {
-//	l.foldLeft(new EmptyContext())(null)
+//    val components = l map {_.component()}
+//	components.foldLeft(new EmptyContext())(null)
+//    run.f()
   }
 }
