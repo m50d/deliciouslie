@@ -24,7 +24,7 @@ object DeliciousLie {
 
   type ContextDependent[Deps <: HList, A] = Deps => A
 
-  trait RawLayer[Deps <: HList, A] {
+  trait BakedLayer[Deps <: HList, A] {
     def withLayer: ContextDependent[Deps, Layer[A]]
   }
 
@@ -38,7 +38,7 @@ object DeliciousLie {
     def burn(f: HNil => Unit) = f(HNil)
   }
 
-  final case class BakedCons[A, PreviousLayers <: BakedCake[_]](a: RawLayer[PreviousLayers#BurntType, A], pl: PreviousLayers) extends BakedCake[A :: PreviousLayers#BurntType] {
+  final case class BakedCons[A, PreviousLayers <: BakedCake[_]](a: BakedLayer[PreviousLayers#BurntType, A], pl: PreviousLayers) extends BakedCake[A :: PreviousLayers#BurntType] {
     type BurntType = A :: PreviousLayers#BurntType
     def burn(f: A :: PreviousLayers#BurntType => Unit) = {
       pl.burn({ plb: PreviousLayers#BurntType =>
