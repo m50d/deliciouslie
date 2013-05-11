@@ -8,7 +8,7 @@ Why?
  * The cake pattern is awesome, but it doesn't handle component lifecycles at all
  * Class initialization order is no good
   * Not safe - if we get it wrong, NPE at runtime
-  * No way to separate "wiring up" a context from starting it
+  * No way to separate "wiring up" a context from "running" it
 
 Goals
 -----
