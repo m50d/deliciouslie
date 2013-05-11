@@ -56,8 +56,9 @@ class DeliciousLieTest {
   object rawComponent3 extends Layer[Service2 :: HNil, Service3] {
     val withService = for {
       s2 <- context
+      f <- callback
     } yield {
-      Service3(s2)
+      f(Service3(s2))
     }
   }
   
