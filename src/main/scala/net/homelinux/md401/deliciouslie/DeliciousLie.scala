@@ -10,11 +10,11 @@ import net.homelinux.md401.deliciouslie.Impl.BakedNil
 
 object DeliciousLie {
   /**
-   * An instantiated component provider, potentially with a lifecycle
+   * An instantiated component that knows how to provide a service (potentially involving some kind of lifecycle)
    */
   trait BakedLayer[A] {
     /**
-     * Call f with a fully initialized A, and perform any necessary teardown afterwards
+     * Call f with a fully initialized service, and perform any necessary teardown afterwards
      */
     def withService(f: A => Unit): Unit
   }
@@ -26,9 +26,9 @@ object DeliciousLie {
   type ContextDependent[Deps <: HList, A] = Deps => A
 
   /**
-   * The general case of a component: provides a service A, given the context Deps.
+   * A general component: provides a service A, given the context Deps.
    * Client code should implement withService; context and callback are provided as syntactic sugar
-   * to make implementing withService easier.
+   * to make this easier.
    */
   trait Layer[Deps <: HList, A] {
     /**
@@ -39,9 +39,9 @@ object DeliciousLie {
         def withService(f: A => Unit) = g(f)
       }
     }
-    
+
     /**
-     * Client code uses this in a for/yield when their component depends on previous components from the context
+     * Client code uses this in a for/yield when their service depends on previous services from the context
      */
     def context[B]()(implicit selector: Selector[Deps, B]): {
       def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]]
@@ -62,12 +62,15 @@ object DeliciousLie {
       }
     }
 
+    /**
+     * The implementation of this normally looks like "for {dependency <- context; ...} yield {new A(dependency)}"
+     */
     val withService: ContextDependent[Deps, BakedLayer[A]]
   }
 
   /**
-   * Helper to make a special case simpler: a component that has no dependencies and no lifecycle
-   * Client code should override layer
+   * A common, simpler special case: a component that has no dependencies and no lifecycle
+   * Client code should override layer()
    */
   trait BottomLayer[A] extends Layer[HNil, A] {
     def layer: A
@@ -104,18 +107,19 @@ object Impl {
    */
   sealed trait BakedCake[Layers] {
     /**
-     * The list of components that will be provided 
+     * The services provided by the cake from this layer down
      */
     type BurntType <: HList
+
+    /**
+     * Run the whole cake, including any lifecycle: initialize all services, call f with this list of services, then perform any necessary teardown
+     */
     def burn(f: BurntType => Unit): Unit
   }
 
-  final case class BakedNil() extends BakedCake[HNil] {
-    type BurntType = HNil
-    def burn(f: HNil => Unit) = f(HNil)
-    def wit[A](layer: Layer[HNil, A]) = BakedCons[A, BakedNil](layer, this)
-  }
-
+  /**
+   * A cake with at least one layer
+   */
   final case class BakedCons[A, PreviousLayers <: BakedCake[_]](a: Layer[PreviousLayers#BurntType, A], pl: PreviousLayers) extends BakedCake[A :: PreviousLayers#BurntType] {
     type BurntType = A :: PreviousLayers#BurntType
     def burn(f: A :: PreviousLayers#BurntType => Unit) = {
@@ -125,7 +129,24 @@ object Impl {
         })
       })
     }
+    
+    /**
+     * Add another layer on top of this cake. removeAll enforces that the dependencies of the new layer are a subset of the dependencies from this layer down 
+     */
     def wit[B, LayerDeps <: HList](layer: Layer[LayerDeps, B])(implicit removeAll: RemoveAll[LayerDeps, BurntType]) = BakedCons[B, BakedCons[A, PreviousLayers]](layer, this)
+  }
+
+  /**
+   * The base case; a cake with no layers
+   */
+  final case class BakedNil() extends BakedCake[HNil] {
+    type BurntType = HNil
+    def burn(f: HNil => Unit) = f(HNil)
+
+    /**
+     * Since this cake has no layers, the first layer must have no dependencies (i.e. depends on HNil)
+     */
+    def wit[A](layer: Layer[HNil, A]) = BakedCons[A, BakedNil](layer, this)
   }
 
 }
