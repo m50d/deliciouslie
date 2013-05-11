@@ -39,7 +39,12 @@ class DeliciousLieTest {
       Service3(s2)
     }
   }
-  val cake = bakedNil wit rawComponent1 wit rawComponent2 wit rawComponent3
+  
+  object component4 extends Layer[Service1:: HNil, String] {
+    val withLayer = for {s1 <- context[Service1]} yield {"hello" }
+  }
+  
+  val cake = bakedNil wit rawComponent1 wit rawComponent2 wit rawComponent3 wit component4
 
   @Test
   def instantiatesComponentExactlyOnce() {
