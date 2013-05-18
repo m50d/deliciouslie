@@ -7,8 +7,14 @@ import HList._
 import BasisConstraint._
 import net.homelinux.md401.deliciouslie.DeliciousLie.Layer
 import net.homelinux.md401.deliciouslie.Impl.BakedNil
+import net.homelinux.md401.deliciouslie.DeliciousLie.Marker
 
 object DeliciousLie {
+  /**
+   * Placeholder used to enforce that layers really do call their passed functions
+   */
+  sealed class Marker private[deliciouslie] {}
+  
   /**
    * An instantiated component that knows how to provide a service (potentially involving some kind of lifecycle)
    */
@@ -16,7 +22,7 @@ object DeliciousLie {
     /**
      * Call f with a fully initialized service, and perform any necessary teardown afterwards
      */
-    def withService(f: A => Unit): Unit
+    def withService(f: A => Marker): Marker
   }
 
   /**
@@ -35,8 +41,8 @@ object DeliciousLie {
      * If client code wishes to define a lifecycle, it should use this as the *last* statement of a for/yield.
      */
     object callback {
-      def map(g: (A => Unit) => Unit): ContextDependent[Deps, BakedLayer[A]] = deps => new BakedLayer[A] {
-        def withService(f: A => Unit) = g(f)
+      def map(g: (A => Marker) => Marker): ContextDependent[Deps, BakedLayer[A]] = deps => new BakedLayer[A] {
+        def withService(f: A => Marker) = g(f)
       }
     }
 
@@ -49,7 +55,7 @@ object DeliciousLie {
     } = new Object() {
       def flatMap(g: B => ContextDependent[Deps, BakedLayer[A]]): ContextDependent[Deps, BakedLayer[A]] = { deps =>
         new BakedLayer[A] {
-          def withService(f: A => Unit) = g(deps.select[B])(deps).withService(f)
+          def withService(f: A => Marker) = g(deps.select[B])(deps).withService(f)
         }
       }
       /**
@@ -57,7 +63,7 @@ object DeliciousLie {
        */
       def map(g: B => A): ContextDependent[Deps, BakedLayer[A]] = { deps =>
         new BakedLayer[A] {
-          def withService(f: A => Unit) = f(g(deps.select[B]))
+          def withService(f: A => Marker) = f(g(deps.select[B]))
         }
       }
     }
@@ -76,7 +82,7 @@ object DeliciousLie {
     def layer: A
     override val withService = { _: HNil =>
       new BakedLayer[A] {
-        def withService(f: A => Unit) = f(layer)
+        def withService(f: A => Marker) = f(layer)
       }
     }
   }
@@ -132,7 +138,7 @@ object Impl {
     def burn(f: A :: PreviousLayers#BurntType => Unit) = {
       pl.burn({ plb: PreviousLayers#BurntType =>
         a.withService(plb).withService({
-          al => f(al :: plb)
+          al => f(al :: plb); new Marker()
         })
       })
     }

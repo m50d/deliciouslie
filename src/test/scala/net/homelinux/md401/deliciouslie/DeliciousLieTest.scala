@@ -41,8 +41,9 @@ class DeliciousLieTest {
     val withService =
       for { f <- callback } yield {
         lifecycle.start()
-        f(Service1())
+        val ret = f(Service1())
         lifecycle.stop()
+        ret
       }
   }
   object rawComponent2 extends Layer[Service1 :: HNil, Service2] {
