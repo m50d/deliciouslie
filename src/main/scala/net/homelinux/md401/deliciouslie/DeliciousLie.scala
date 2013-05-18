@@ -80,6 +80,11 @@ object DeliciousLie {
       }
     }
   }
+  
+  /**
+   * Even simpler and more specialized case: a component that is just a fixed value
+   */
+  case class ValueLayer[A](layer: A) extends BottomLayer[A]
 
   /**
    * Entry point for creating a cake. Cakes take the form "bake wit Layer1 wit Layer2 wit..."

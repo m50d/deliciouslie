@@ -4,6 +4,9 @@
     <groupId>net.homelinux.md401</groupId>
     <artifactId>deliciouslie</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <!-- Required by maven central policy -->
+    <name>deliciouslie</name>
+    <description>A lightweight lifecycle-aware dependency injection pattern/container</description>
     <dependencies>
         <dependency>
             <groupId>org.scala-lang</groupId>
