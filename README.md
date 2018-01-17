@@ -5,6 +5,7 @@ Inspired by the Cake Pattern.
 
 Why?
 ----
+
    * The cake pattern is awesome, but it doesn't handle component lifecycles at all
    * Class initialization order is no good
       * Not safe - if we get it wrong, NPE at runtime
@@ -12,6 +13,7 @@ Why?
 
 Features
 --------
+
    * Lightweight
       * Implemented in pure scala, without macros
       * Only dependency is Shapeless
@@ -26,6 +28,7 @@ Features
 
 Usage
 -----
+
 ````scala
 import shapeless._
 import net.homelinux.md401.deliciouslie.DeliciousLie._
