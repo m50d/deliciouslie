@@ -1,16 +1,16 @@
-#deliciouslie
+# deliciouslie
 
 A lightweight dependency injection pattern that understands initialization and teardown.
 Inspired by the Cake Pattern.
 
-##Why?
+## Why?
 
    * The cake pattern is awesome, but it doesn't handle component lifecycles at all
    * Class initialization order is no good
       * Not safe - if we get it wrong, NPE at runtime
       * No way to separate "wiring up" a context from "running" it
 
-##Features
+## Features
 
    * Lightweight
       * Implemented in pure scala, without macros
@@ -24,7 +24,7 @@ Inspired by the Cake Pattern.
    * Interoperable
       * Uses standard Shapeless types where possible
 
-##Usage
+## Usage
 
 ````scala
 import shapeless._
