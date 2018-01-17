@@ -5,24 +5,24 @@ Inspired by the Cake Pattern.
 
 ## Why?
 
-   * The cake pattern is awesome, but it doesn't handle component lifecycles at all
-   * Class initialization order is no good
-      * Not safe - if we get it wrong, NPE at runtime
-      * No way to separate "wiring up" a context from "running" it
+* The cake pattern is awesome, but it doesn't handle component lifecycles at all
+* Class initialization order is no good
+   * Not safe - if we get it wrong, NPE at runtime
+   * No way to separate "wiring up" a context from "running" it
 
 ## Features
 
-   * Lightweight
-      * Implemented in pure scala, without macros
-      * Only dependency is Shapeless
-      * Does require somewhat longer component implementations than "classic" cake pattern
-      * However, doesn't require distinct interface/implementation declarations for each component
-   * Safe
-      * Dependencies are checked at compile time
-      * Service initialization happens in the correct order in the cake
-      * Services are only in scope while they're live
-   * Interoperable
-      * Uses standard Shapeless types where possible
+* Lightweight
+   * Implemented in pure scala, without macros
+   * Only dependency is Shapeless
+   * Does require somewhat longer component implementations than "classic" cake pattern
+   * However, doesn't require distinct interface/implementation declarations for each component
+* Safe
+   * Dependencies are checked at compile time
+   * Service initialization happens in the correct order in the cake
+   * Services are only in scope while they're live
+* Interoperable
+   * Uses standard Shapeless types where possible
 
 ## Usage
 
