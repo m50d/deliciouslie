@@ -12,13 +12,6 @@ Inspired by the Cake Pattern.
 
 ## Features
 
-- a
-  - b
-
-
-    c
-- d
-
 * Lightweight
   * Implemented in pure scala, without macros
   * Only dependency is Shapeless
