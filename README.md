@@ -3,6 +3,8 @@
 A lightweight dependency injection pattern that understands initialization and teardown.
 Inspired by the Cake Pattern.
 
+[![Build Status](https://travis-ci.org/m50d/deliciouslie.svg?branch=master)](https://travis-ci.org/m50d/deliciouslie)
+
 ## Why?
 
    * The cake pattern is awesome, but it doesn't handle component lifecycles at all
