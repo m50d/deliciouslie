@@ -13,11 +13,11 @@ Inspired by the Cake Pattern.
 ## Features
 
    * Lightweight
-      * Implemented in pure scala, without macros
-      * Only dependency is Shapeless
-      * Does require somewhat longer component implementations than "classic" cake pattern
-      * However, doesn't require distinct interface/implementation declarations for each component
-   * Safe
+      * Implemented in pure scala, without macros
+      * Only dependency is Shapeless
+      * Does require somewhat longer component implementations than "classic" cake pattern
+      * However, doesn't require distinct interface/implementation declarations for each component
+   * Safe
       * Dependencies are checked at compile time
       * Service initialization happens in the correct order in the cake
       * Services are only in scope while they're live
