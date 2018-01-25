@@ -18,11 +18,11 @@ Inspired by the Cake Pattern.
       * Does require somewhat longer component implementations than "classic" cake pattern
       * However, doesn't require distinct interface/implementation declarations for each component
    * Safe
-      * Dependencies are checked at compile time
-      * Service initialization happens in the correct order in the cake
-      * Services are only in scope while they're live
+      * Dependencies are checked at compile time
+      * Service initialization happens in the correct order in the cake
+      * Services are only in scope while they're live
    * Interoperable
-      * Uses standard Shapeless types where possible
+      * Uses standard Shapeless types where possible
 
 ## Usage
 
