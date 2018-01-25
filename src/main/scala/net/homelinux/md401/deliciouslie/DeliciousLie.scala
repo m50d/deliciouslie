@@ -2,12 +2,13 @@ package net.homelinux.md401.deliciouslie
 
 import shapeless._
 import UnaryTCConstraint._
-import TypeOperators._
 import HList._
 import BasisConstraint._
 import net.homelinux.md401.deliciouslie.DeliciousLie.Layer
 import net.homelinux.md401.deliciouslie.Impl.BakedNil
 import net.homelinux.md401.deliciouslie.DeliciousLie.Marker
+import shapeless.ops.hlist.Selector
+import shapeless.ops.hlist.RemoveAll
 
 object DeliciousLie {
   /**
@@ -105,7 +106,7 @@ object Impl {
    * We can always view a component which depends on a small context as depending on a larger context (as long as the larger context contains all the services
    * that the smaller one does)
    */
-  implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll[SmallDeps, LargeDeps]): Layer[LargeDeps, A] =
+  implicit def expandContext[SmallDeps <: HList, LargeDeps <: HList, A, Rest](layer: Layer[SmallDeps, A])(implicit removeAll: RemoveAll.Aux[LargeDeps, SmallDeps, (SmallDeps, Rest)]): Layer[LargeDeps, A] =
     new Layer[LargeDeps, A] {
       val withService = { lds: LargeDeps =>
         val (sds, _) = lds.removeAll[SmallDeps]
@@ -146,7 +147,7 @@ object Impl {
     /**
      * Add another layer on top of this cake. removeAll enforces that the dependencies of the new layer are a subset of the dependencies from this layer down 
      */
-    def wit[B, LayerDeps <: HList](layer: Layer[LayerDeps, B])(implicit removeAll: RemoveAll[LayerDeps, BurntType]) = BakedCons[B, BakedCons[A, PreviousLayers]](layer, this)
+    def wit[B, LayerDeps <: HList, Rest](layer: Layer[LayerDeps, B])(implicit removeAll: RemoveAll.Aux[BurntType, LayerDeps, (LayerDeps, Rest)]) = BakedCons[B, BakedCons[A, PreviousLayers]](layer, this)
   }
 
   /**

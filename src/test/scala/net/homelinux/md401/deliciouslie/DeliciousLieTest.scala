@@ -5,28 +5,6 @@ import shapeless._
 import org.easymock.EasyMock._
 import org.junit.Test
 
-//Copied here as there is a shapeless bug at the moment
-object RemoveAllAux {
-  implicit def hlistRemoveAllNil[L <: HList] =
-    new RemoveAllAux[HNil, L, L] {
-      def apply(l : L): (HNil, L) = {
-        (HNil, l)
-      }
-    }
-
-  implicit def hlistRemoveAll[L <: HList, E, RemE <: HList, Rem <: HList, SLT <: HList]
-    (implicit rt : RemoveAux[L, E, RemE], st : RemoveAllAux[SLT, RemE, Rem]) = 
-      new RemoveAllAux[E :: SLT, L, Rem] {
-        def apply(l : L) : (E :: SLT, Rem) = {
-          val (e, rem) = rt(l)
-          val (sl, left) = st(rem)
-          (e :: sl, left)
-        }
-      }
-}
-
-import RemoveAllAux._
-
 class DeliciousLieTest {
   case class Service1()
   case class Service2(s1: Service1)
